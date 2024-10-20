@@ -86,10 +86,16 @@ namespace NCadCustom
 
                         McObject SelectedObj = idObjSelected[iRow-1].GetObject(); // Перебор циклом всех выбранных объектов и построчная запись параметров
 
-                        if (SelectedObj is McUMarker currObject) // Можно добавить второй тип объекта - McUMarker || McParametricObject
+                        if (SelectedObj is McUMarker currUmarkerObject) // тип объекта - McUMarker
                         {
-                            oneObject.writeParamsToObj(currObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
+                            oneObject.writeParamsToObj(currUmarkerObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
                         }
+
+                        else if (SelectedObj is McParametricObject currParObject) // тип объекта  McParametricObject
+                        {
+                        oneObject.writeParamsToObj(currParObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
+                        }
+
                 }
 
 
