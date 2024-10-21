@@ -13,7 +13,7 @@ namespace NCadCustom.Code
     internal class ObjectForInsert
     {
         /// <summary>
-        /// Парсинг строки эксель в объект который в дальнейшем помещается на чертеж.
+        /// Парсинг строки эксель в объект на чертежe
         /// Завязано на номера столбцов
         /// </summary>
         /// <param name="sst"></param>

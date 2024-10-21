@@ -15,6 +15,7 @@ using Ed = HostMgd.EditorInput;
 using System.Runtime.Intrinsics.Arm;
 using Rtm = Teigha.Runtime;
 using System.Windows.Forms;
+using Multicad.Symbols.Tables;
 
 namespace NCadCustom
 {
@@ -43,10 +44,10 @@ namespace NCadCustom
         [Rtm.CommandMethod("PRPR_objxldata", Rtm.CommandFlags.Session)]
         public static void MainCreateObjBySpreadSheet()
         {
-            InputJig jig = new InputJig();
+            
             HostMgd.EditorInput.Editor ed = HostMgd.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
             App.Document doc = App.Application.DocumentManager.MdiActiveDocument;
-
+            //InputJig jig = new InputJig();
             //string paramsFilePath = jig.GetText("Укажите полный путь до файла параметров(Excel)", false);
             //paramsFilePath = paramsFilePath.Trim('"').ToLower();
 
@@ -72,19 +73,19 @@ namespace NCadCustom
                 ShWorker shWorker = new ShWorker(paramsFilePath);
                 List<Row> dataRows = shWorker.dataRows;
 
-                List<string> headers = shWorker.GetHeaders(shWorker.sst, dataRows.ElementAt(0));
-                List<ObjectForInsert> objs = new List<ObjectForInsert>();
+                List<string> headers = shWorker.GetHeaders(shWorker.sst, dataRows.ElementAt(1));
+                
 
                 McObjectId[] idObjSelected = McObjectManager.SelectObjects("Выберите объекты: ");
 
                 // за исключением шапки - остальное строки с данными содержат параметры объекта.
                 Row rw = new Row();
-                for (int iRow = 1; iRow < dataRows.Count; iRow++)
+                for (int iRow = 2; iRow < dataRows.Count; iRow++)
                 {
                     rw = dataRows[iRow];
                     ObjectForInsert oneObject = new ObjectForInsert(shWorker.sst, headers, rw);
 
-                        McObject SelectedObj = idObjSelected[iRow-1].GetObject(); // Перебор циклом всех выбранных объектов и построчная запись параметров
+                        McObject SelectedObj = idObjSelected[iRow-2].GetObject(); // Перебор циклом всех выбранных объектов и построчная запись параметров
 
                         if (SelectedObj is McUMarker currUmarkerObject) // тип объекта - McUMarker
                         {
@@ -96,6 +97,10 @@ namespace NCadCustom
                         oneObject.writeParamsToObj(currParObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
                         }
 
+                        else if (SelectedObj is McTable currTableObject) // тип объекта  таблиуа СПДС
+                        {
+                            oneObject.writeParamsToObj(currTableObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
+                        }
                 }
 
 
