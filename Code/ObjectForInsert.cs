@@ -49,7 +49,7 @@ namespace NCadCustom.Code
                     }
 
                     else {
-
+                        cells.ElementAt(iCol).DataType = CellValues.Number;
                         string stringVal = cells.ElementAt(iCol).CellValue.Text;
                         objParams.Add(headers[iCol], stringVal);
                     }
