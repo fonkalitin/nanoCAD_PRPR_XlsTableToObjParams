@@ -16,6 +16,7 @@ using System.Runtime.Intrinsics.Arm;
 using Rtm = Teigha.Runtime;
 using System.Windows.Forms;
 using Multicad.Symbols.Tables;
+using Color = System.Drawing.Color;
 
 namespace NCadCustom
 {
@@ -73,28 +74,32 @@ namespace NCadCustom
                 ShWorker shWorker = new ShWorker(paramsFilePath);
                 List<Row> dataRows = shWorker.dataRows;
 
-                List<string> headers = shWorker.GetHeaders(shWorker.sst, dataRows.ElementAt(1));
+                List<string> headers = shWorker.GetHeaders(shWorker.sst, dataRows.ElementAt(1)); // Заголовки с именами параметров начинаются со второй строки ElementAt(1)
                 
 
                 McObjectId[] idObjSelected = McObjectManager.SelectObjects("Выберите объекты: ");
 
                 // за исключением шапки - остальное строки с данными содержат параметры объекта.
                 Row rw = new Row();
-                for (int iRow = 2; iRow < dataRows.Count; iRow++)
+                for (int iRow = 2; iRow < dataRows.Count; iRow++) // Третья строка со значениями параметров в таблице (iRow = 2)
                 {
                     rw = dataRows[iRow];
+
                     ObjectForInsert oneObject = new ObjectForInsert(shWorker.sst, headers, rw);
+
+                    //string val = oneObject.objParams.First().Value.ToString();
 
                         McObject SelectedObj = idObjSelected[iRow-2].GetObject(); // Перебор циклом всех выбранных объектов и построчная запись параметров
 
                         if (SelectedObj is McUMarker currUmarkerObject) // тип объекта - McUMarker
                         {
                             oneObject.writeParamsToObj(currUmarkerObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
+                            currUmarkerObject.HighLightObjects(true, Color.LightYellow); // Подсветка связанных объектов
                         }
 
                         else if (SelectedObj is McParametricObject currParObject) // тип объекта  McParametricObject
                         {
-                        oneObject.writeParamsToObj(currParObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
+                            oneObject.writeParamsToObj(currParObject.DbEntity); // Вызов метода выполняющего непосредственно вставку параметров в объект
                         }
 
                         else if (SelectedObj is McTable currTableObject) // тип объекта  таблиуа СПДС
@@ -104,7 +109,7 @@ namespace NCadCustom
                 }
 
 
-                ed.WriteMessage($"Обработано позиций: {dataRows.Count - 1}");
+                ed.WriteMessage($"Обработано позиций: {dataRows.Count - 2}");
             }
             catch (Exception e)
             {

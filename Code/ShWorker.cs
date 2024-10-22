@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
@@ -75,20 +76,36 @@ namespace NCadCustom.Code
                             break;
                         }
 
-                        controlCell.DataType = CellValues.SharedString;
                         controlValue = controlCell.CellValue;
+
                         if (controlValue == null)
                         {
                             break;
                         }
 
+                        // Проверка типа данных в ячейке
+                        if (controlCell.DataType != null && controlCell.DataType == CellValues.SharedString) //
+                        {
+                            int ssid = int.Parse(controlCell.CellValue.Text);
+                            string cellValue = sst.ChildElements[ssid].InnerText.ToString();
+                            controlText = cellValue;
+                        }
 
-                        controlText = controlValue.Text;
-                        
+                        else if (controlCell.DataType != null && controlCell.DataType == CellValues.Number)
+                        {
+                            string number = controlCell.CellValue.Text;
+                            controlText = number;
+                        }
+
+                        else
+                        {
+                            controlCell.DataType = CellValues.Number;
+                            controlText = controlCell.CellValue.Text.ToString();
+                        }
 
                         if (controlText == string.Empty)
                         {
-                            break;
+                        break;
                         }
 
                         resRows.Add(r);
